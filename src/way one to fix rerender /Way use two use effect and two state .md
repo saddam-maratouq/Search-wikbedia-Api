@@ -1,25 +1,34 @@
 
-import {React, useState,useEffect,useRef} from 'react'
+
+// in this way we use 2 use effect with 2 use State to make state not to reneder ... best web performance  
+// but the best way the new way which I will use it in this app 
+
+
+import {React, useState,useEffect} from 'react'
 import axios from 'axios';
 
 
 export default function App() {
 
 
-const [term,SetTerm] = useState('')  
-const [result,SetReaslt] = useState([])  
-const termState = useRef() 
+const [term,SetTerm] = useState('java')  
+const [debounceSearch,SetdebounceSearch] = useState(term) 
+const [result,SetReaslt] = useState([]) 
 
 
 
-useEffect(() => {
-  termState.current = term 
+useEffect(() => { 
+ const timeOut = setTimeout(() => {
+
+  SetdebounceSearch(term)
   
-},) 
+ }, 1200); 
 
-const prevtermState = termState.current 
+  return () => clearTimeout(timeOut)
+    
+}, [term])  
 
-// console.log('re-render');
+console.log('re-render');
 
 useEffect(() => {
 
@@ -31,7 +40,7 @@ useEffect(() => {
       list : 'search',
       origin:'*',
       format:'json',
-      srsearch : term ,
+      srsearch : debounceSearch ,
     }
 
     const request =  await axios.get('https://en.wikipedia.org/w/api.php',{params} ) // { params : {}}  
@@ -39,35 +48,15 @@ useEffect(() => {
 
     SetReaslt(request.data.query.search);
 
-  };     
+  };    
 
-  if (!result.length) {
+  if (term) {
     
-    if (term) {
-    
-      Search(); 
-    } 
+        Search(); 
   }
 
-  else if (prevtermState !== term ) {
-
-    const timeSearch = setTimeout(() => {
-      
-      if (term) {
-    
-      Search(); 
-    } 
-
-    }, 1000);
-
-    return () => { clearTimeout(timeSearch) }
-  }
   
-
- 
-
-  
-},[term,result.length,prevtermState]) 
+},[debounceSearch]) 
 
 
 
