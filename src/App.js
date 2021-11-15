@@ -1,23 +1,18 @@
 
 import {React, useState,useEffect,useRef} from 'react'
 import axios from 'axios';
+import usePrevState from './hocks/usePrevState'
 
 
 export default function App() {
 
 
-const [term,SetTerm] = useState('')  
+const [term,SetTerm] = useState('java')  
 const [result,SetReaslt] = useState([])  
-const termState = useRef() 
+const prevtermState  = usePrevState(term)  
 
 
 
-useEffect(() => {
-  termState.current = term 
-  
-},) 
-
-const prevtermState = termState.current 
 
 // console.log('re-render');
 
